@@ -1,52 +1,61 @@
 # XCurveFitLab
 
-XCurveFitLab es una herramienta de **ajuste de curvas no lineales** con enfoque **evolutivo**, diseñada para explorar y comparar el desempeño de modelos y algoritmos de optimización sobre datos experimentales (CSV). El proyecto integra una **interfaz gráfica (GUI)** para carga de datos, visualización y ejecución del ajuste, y un **script de benchmarking** para comparar resultados contra métodos clásicos.
+**XCurveFitLab** es una herramienta desarrollada en **Python** (con interfaz gráfica) para **ajuste de curvas** lineales y no lineales mediante un **Algoritmo Genético (GA)**, orientada a la exploración didáctica y a la validación visual del proceso de optimización.
+
+Este repositorio acompaña el trabajo de grado de **Licenciatura en Matemáticas – Universidad del Quindío**, en el marco del proyecto **“Ajuste de curvas usando técnicas evolutivas”**.
 
 ---
 
 ## Objetivo del proyecto
 
-El objetivo principal es **materializar una herramienta práctica** que permita:
+Construir una herramienta que permita:
 
-- Ajustar modelos no lineales a partir de datos reales cargados desde CSV.
-- Visualizar el proceso de optimización (aptitud / MSE) y el ajuste final sobre los datos.
-- Incorporar condiciones de **estabilidad numérica** (control de dominios, penalizaciones por overflow, etc.) para modelos sensibles.
-- Realizar **pruebas internas por etapas** y comparaciones con métodos clásicos de mínimos cuadrados.
-- Proveer una base reproducible para evaluación académica (métricas, gráficas y resultados exportables).
+- Ajustar curvas a partir de datos en **CSV** (selección de columnas **X** e **Y**).
+- Minimizar el error mediante **MSE** (Mean Squared Error) como función objetivo.
+- Visualizar de forma clara:
+  - La **convergencia** del algoritmo (MSE por generaciones).
+  - La **curva ajustada** sobre la nube de puntos.
+  - Métricas complementarias (p. ej., **R²**) y lectura de residuales.
 
 ---
 
-## ¿Qué hace XCurveFitLab?
+## Modelos soportados
 
-### 1) Interfaz gráfica (GUI)
-La aplicación permite:
+XCurveFitLab permite ajustar distintas familias de modelos (según la configuración seleccionada):
 
-- Cargar un archivo **CSV**.
-- Seleccionar columnas para **Eje X** y **Eje Y**.
-- Graficar la nube de puntos.
-- Seleccionar el tipo de modelo/algoritmo de ajuste (ej.: trigonométrico, exponencial, logístico, polinómico, etc.).
-- Configurar parámetros del proceso evolutivo (población, mutación, cruce, generaciones).
-- Ejecutar el algoritmo y observar:
-  - Curva de aptitud (MSE) por generaciones
-  - Curva ajustada vs datos originales
-  - Métricas (por ejemplo, \(R^2\), MSE)
+- **Lineal:**  \(\hat{y}=ax+b\)
+- **Polinómico (grado 1 a 5):**  \(\hat{y}=\sum_{i=0}^{n} a_i x^i\)
+- **Exponencial:**  \(\hat{y}=a e^{bx} + c\)
+- **Logarítmico:**  \(\hat{y}=a\ln(bx+c)+d\)  *(con restricción \(bx+c>0\))*
+- **Trigonométrico:**  \(\hat{y}=a\sin(bx)+c\cos(dx)+e\)
+- **Logístico (Verhulst):**  \(\hat{y}=\dfrac{L}{1+e^{-k(x-x_0)}}\)
 
-### 2) Benchmarking (métodos clásicos)
-Incluye un script para comparar el ajuste de un mismo dataset con enfoques clásicos, como:
+> Nota: Para modelos sensibles (exponencial/logístico/logarítmico), se aplican **restricciones de dominio** y **penalizaciones** para reducir fallos por overflow/valores inválidos.
 
-- Gauss–Newton (GN)
-- Levenberg–Marquardt (LM)
-- Newton–Raphson sobre SSE
-- Descenso por gradiente sobre SSE
-- (y OLS para casos lineales/polinómicos, cuando aplique)
+---
 
-El benchmark exporta resultados a CSV y genera una gráfica comparativa (curvas ajustadas por método).
+## ¿Cómo funciona el Algoritmo Genético?
+
+- Cada **individuo** representa un vector de parámetros \(\theta\).
+- Se evalúa el individuo con **MSE**.
+- Se usa un esquema de:
+  - **Selección elitista por truncamiento** (p. ej., mejores individuos).
+  - **Cruce** (punto simple).
+  - **Mutación** (uniforme).
+- Se reporta el mejor individuo y se actualiza la gráfica durante la ejecución.
 
 ---
 
 ## Estructura del repositorio
 
-> (La estructura puede evolucionar, pero la idea es mantener separación clara entre GUI, scripts, datos y resultados.)
+Ejemplo típico (puede variar según tus commits):
+
+├─ XCurveFitLab.py # Aplicación GUI (PyQt5)
+├─ benchmark_classic_fits_full.py # Script CLI para benchmarks y comparaciones
+├─ data.csv # Dataset de prueba (ejemplo)
+├─ Data_Sets/ # Conjunto de datasets
+├─ Icons/ # Recursos gráficos
+└─ README.md
 
 
 
@@ -54,25 +63,58 @@ El benchmark exporta resultados a CSV y genera una gráfica comparativa (curvas 
 
 ## Requisitos
 
-- Python **3.12+** (recomendado)
-- Dependencias principales:
+- **Python 3.10+** (recomendado: **Python 3.12**)
+- Paquetes:
   - `numpy`
   - `pandas`
   - `matplotlib`
-  - `PyQt5` (solo para GUI)
+  - `PyQt5`
 
-Instalación rápida:
-```bash
-pip install numpy pandas matplotlib pyqt5
+---
+
+## Instalación (recomendada con entorno virtual)
+
+### Windows (PowerShell)
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+pip install numpy pandas matplotlib PyQt5
+
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install numpy pandas matplotlib PyQt5
+
+Ejecución de la aplicación (GUI)
+
+La GUI requiere entorno con pantalla (Windows / Linux con escritorio / macOS).
+
+python XCurveFitLab.py
+Flujo en la interfaz:
+
+Cargar CSV.
+
+Elegir columna para X y para Y.
+
+Graficar puntos (validación visual).
+
+Seleccionar modelo y configurar el GA.
+
+Ejecutar y observar MSE por generaciones + curva ajustada.
 
 
+
+Benchmarks (modo consola / sin GUI)
+
+Este repositorio incluye un script CLI para comparar ajustes y generar gráficas de salida, ideal para ejecución en entornos sin interfaz.
+
+Ejemplo (dataset propio)
 python3.12 benchmark_classic_fits_full.py \
   --csv data.csv \
   --x var5 --y var6 \
-  --model trigonometrico \
+  --model exponencial \
   --seed 123 --restarts 40 \
-  --out resultados.csv \
-  --plot --plot_file comparacion.png
-
-
-
+  --out res_var5_var6_exp.csv \
+  --plot --plot_file fig_var5_var6_exp.png
