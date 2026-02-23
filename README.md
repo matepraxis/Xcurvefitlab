@@ -24,12 +24,12 @@ Con XCurveFitLab puedes:
 
 La app permite trabajar con estos modelos:
 
-- **Lineal:** \(\hat{y}=ax+b\)
-- **Polinómico (grado 1 a 5):** \(\hat{y}=\sum_{i=0}^{n} a_i x^i\)
-- **Exponencial:** \(\hat{y}=a e^{bx} + c\)
-- **Logarítmico:** \(\hat{y}=a\ln(bx+c)+d\), con la restricción \(bx+c>0\)
-- **Trigonométrico:** \(\hat{y}=a\sin(bx)+c\cos(dx)+e\)
-- **Logístico (Verhulst):** \(\hat{y}=\dfrac{L}{1+e^{-k(x-x_0)}}\)
+- **Lineal**
+- **Polinómico (grado 1 a 5)**
+- **Exponencial**
+- **Logarítmico**
+- **Trigonométrico**
+- **Logístico**
 
 > Nota: en modelos sensibles (por ejemplo, logarítmico, exponencial y logístico), el código aplica penalizaciones para manejar desbordamientos y valores inválidos.
 
