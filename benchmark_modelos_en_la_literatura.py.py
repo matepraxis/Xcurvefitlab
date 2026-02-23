@@ -11,9 +11,8 @@ import numpy as np
 import pandas as pd
 
 
-# ============================================================
 # Modelos
-# ============================================================
+
 
 def model_logaritmico(x: np.ndarray, theta: np.ndarray) -> np.ndarray:
     # y = a * ln(b*x + c) + d
