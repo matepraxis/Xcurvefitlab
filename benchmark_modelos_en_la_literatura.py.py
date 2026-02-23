@@ -48,13 +48,13 @@ MODEL_SPECS: Dict[str, Dict] = {
     "exponencial":    {"p": 3, "fn": model_exponencial},
     "trigonometrico": {"p": 5, "fn": model_trigonometrico},
     "logistico":      {"p": 3, "fn": model_logistico},
-    # polinomico requiere grado
+
 }
 
 
-# ============================================================
+
 # Métricas
-# ============================================================
+
 
 def sse(y: np.ndarray, yhat: np.ndarray) -> float:
     r = y - yhat
@@ -71,9 +71,9 @@ def r2_score(y: np.ndarray, yhat: np.ndarray) -> float:
     return 1.0 - ss_res / ss_tot
 
 
-# ============================================================
-# Evaluación segura + residuales + derivadas numéricas
-# ============================================================
+
+# derivadas numéricas
+
 
 def safe_model_eval(model: Callable, x: np.ndarray, theta: np.ndarray, **kwargs) -> np.ndarray:
     with np.errstate(over="ignore", divide="ignore", invalid="ignore"):
@@ -108,9 +108,9 @@ def jacobian_fd(model: Callable, x: np.ndarray, y: np.ndarray, theta: np.ndarray
     return J
 
 
-# ============================================================
+
 # Optimizadores
-# ============================================================
+
 
 @dataclass
 class FitResult:
@@ -296,9 +296,8 @@ def fit_gradient_descent(model: Callable, x: np.ndarray, y: np.ndarray, theta0: 
     return FitResult("Gradiente (SSE)", theta, mse(y, yhat), r2_score(y, yhat), k, time.time()-t0, converged)
 
 
-# ============================================================
-# OLS para polinomios
-# ============================================================
+# polinomios
+
 
 def fit_poly_ols(x: np.ndarray, y: np.ndarray, grado: int) -> FitResult:
     t0 = time.time()
@@ -308,9 +307,8 @@ def fit_poly_ols(x: np.ndarray, y: np.ndarray, grado: int) -> FitResult:
     return FitResult(f"OLS polinomio grado {grado}", theta, mse(y, yhat), r2_score(y, yhat), 1, time.time()-t0, True)
 
 
-# ============================================================
-# CSV + utilidades
-# ============================================================
+# CSV 
+
 
 def load_csv(csv_path: str, x_col: Optional[str], y_col: Optional[str]) -> Tuple[np.ndarray, np.ndarray]:
     df = pd.read_csv(csv_path)
@@ -327,9 +325,9 @@ def random_theta(p: int, low: float = -10.0, high: float = 10.0, rng: Optional[n
     return rng.uniform(low, high, size=p)
 
 
-# ============================================================
-# Gráfica: puntos + curvas por método (como tu ejemplo)
-# ============================================================
+
+# Gráfica puntos 
+
 
 def predict(model_name: str, x: np.ndarray, theta: np.ndarray, grado: Optional[int] = None) -> np.ndarray:
     theta = np.asarray(theta, dtype=float)
@@ -349,7 +347,7 @@ def save_plot_compare(model_name: str, x: np.ndarray, y: np.ndarray, results: Li
     x_fine = np.linspace(np.min(x), np.max(x), 1200)
 
     plt.figure(figsize=(16, 7))
-    plt.scatter(x, y, s=22)  # puntos (sin fijar color manual)
+    plt.scatter(x, y, s=22) 
 
     for r in results:
         yhat = predict(model_name, x_fine, r.theta, grado=grado)
@@ -366,9 +364,8 @@ def save_plot_compare(model_name: str, x: np.ndarray, y: np.ndarray, results: Li
     plt.close()
 
 
-# ============================================================
-# Runner por modelo/método
-# ============================================================
+# Iniciador del benchmark
+
 
 def run_one_fit(model_name: str, x: np.ndarray, y: np.ndarray, grado: Optional[int],
                 theta0: np.ndarray, method: str) -> FitResult:
@@ -404,9 +401,6 @@ def run_one_fit(model_name: str, x: np.ndarray, y: np.ndarray, grado: Optional[i
         raise ValueError("Método no soportado.")
 
 
-# ============================================================
-# MAIN
-# ============================================================
 
 def main() -> None:
     ap = argparse.ArgumentParser()
