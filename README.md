@@ -1,70 +1,72 @@
 # XCurveFitLab
 
-**XCurveFitLab** es una herramienta desarrollada en **Python** (con interfaz gráfica) para **ajuste de curvas** lineales y no lineales mediante un **Algoritmo Genético (GA)**, orientada a la exploración didáctica y a la validación visual del proceso de optimización.
+**XCurveFitLab** es una aplicación de escritorio hecha en **Python + PyQt5** para ajustar curvas a partir de datos reales usando un **algoritmo genético**.  
+La idea del proyecto es simple: cargar un CSV, elegir las columnas de trabajo y ver cómo el modelo va mejorando generación tras generación.
 
-Este repositorio acompaña el trabajo de grado de **Licenciatura en Matemáticas – Universidad del Quindío**, en el marco del proyecto **“Ajuste de curvas usando técnicas evolutivas”**.
-
----
-
-## Objetivo del proyecto
-
-Construir una herramienta que permita:
-
-- Ajustar curvas a partir de datos en **CSV** (selección de columnas **X** e **Y**).
-- Minimizar el error mediante **MSE** (Mean Squared Error) como función objetivo.
-- Visualizar de forma clara:
-  - La **convergencia** del algoritmo (MSE por generaciones).
-  - La **curva ajustada** sobre la nube de puntos.
-  - Métricas complementarias (p. ej., **R²**) y lectura de residuales.
+Este repositorio acompaña el trabajo de grado de **Licenciatura en Matemáticas de la Universidad del Quindío**, dentro del proyecto **“Ajuste de curvas usando técnicas evolutivas”**.
 
 ---
 
-## Modelos soportados
+## ¿Para qué sirve?
 
-XCurveFitLab permite ajustar distintas familias de modelos (según la configuración seleccionada):
+Con XCurveFitLab puedes:
 
-- **Lineal:**  \(\hat{y}=ax+b\)
-- **Polinómico (grado 1 a 5):**  \(\hat{y}=\sum_{i=0}^{n} a_i x^i\)
-- **Exponencial:**  \(\hat{y}=a e^{bx} + c\)
-- **Logarítmico:**  \(\hat{y}=a\ln(bx+c)+d\)  *(con restricción \(bx+c>0\))*
-- **Trigonométrico:**  \(\hat{y}=a\sin(bx)+c\cos(dx)+e\)
-- **Logístico (Verhulst):**  \(\hat{y}=\dfrac{L}{1+e^{-k(x-x_0)}}\)
-
-> Nota: Para modelos sensibles (exponencial/logístico/logarítmico), se aplican **restricciones de dominio** y **penalizaciones** para reducir fallos por overflow/valores inválidos.
+- Cargar datos desde un archivo **CSV**.
+- Elegir qué columna usar como **X** y cuál como **Y**.
+- Probar distintos tipos de modelos de ajuste.
+- Ver la evolución del error (**MSE**) en tiempo real.
+- Visualizar la curva ajustada sobre los datos originales.
+- Revisar métricas como **R²** para tener una idea rápida de la calidad del ajuste.
 
 ---
 
-## ¿Cómo funciona el Algoritmo Genético?
+## Modelos disponibles
 
-- Cada **individuo** representa un vector de parámetros \(\theta\).
-- Se evalúa el individuo con **MSE**.
-- Se usa un esquema de:
-  - **Selección elitista por truncamiento** (p. ej., mejores individuos).
-  - **Cruce** (punto simple).
-  - **Mutación** (uniforme).
-- Se reporta el mejor individuo y se actualiza la gráfica durante la ejecución.
+La app permite trabajar con estos modelos:
+
+- **Lineal:** \(\hat{y}=ax+b\)
+- **Polinómico (grado 1 a 5):** \(\hat{y}=\sum_{i=0}^{n} a_i x^i\)
+- **Exponencial:** \(\hat{y}=a e^{bx} + c\)
+- **Logarítmico:** \(\hat{y}=a\ln(bx+c)+d\), con la restricción \(bx+c>0\)
+- **Trigonométrico:** \(\hat{y}=a\sin(bx)+c\cos(dx)+e\)
+- **Logístico (Verhulst):** \(\hat{y}=\dfrac{L}{1+e^{-k(x-x_0)}}\)
+
+> Nota: en modelos sensibles (por ejemplo, logarítmico, exponencial y logístico), el código aplica penalizaciones para manejar desbordamientos y valores inválidos.
+
+---
+
+## ¿Cómo está planteado el algoritmo genético?
+
+En términos prácticos, el flujo es:
+
+1. Cada individuo representa una posible solución (un conjunto de parámetros del modelo).
+2. Se evalúa su calidad con el **MSE**.
+3. Se conservan los mejores, se cruzan y mutan.
+4. Se repite el proceso por generaciones hasta encontrar un buen ajuste.
+
+Durante la ejecución se actualizan dos gráficas:
+
+- **Aptitud (MSE) por generación**.
+- **Curva ajustada vs. datos originales**.
 
 ---
 
 ## Estructura del repositorio
 
-Ejemplo típico (puede variar según tus commits):
+Archivos y carpetas principales:
 
-├─ XCurveFitLab.py # Aplicación GUI (PyQt5)
-├─ benchmark_classic_fits_full.py # Script CLI para benchmarks y comparaciones
-├─ data.csv # Dataset de prueba (ejemplo)
-├─ Data_Sets/ # Conjunto de datasets
-├─ Icons/ # Recursos gráficos
-└─ README.md
-
-
+- `XCurveFitLab.py`: aplicación principal con interfaz gráfica.
+- `benchmark_modelos_en_la_literatura.py.py`: script de comparación/benchmark.
+- `Data_Sets/`: conjuntos de datos de ejemplo.
+- `Icons/`: recursos gráficos usados por la interfaz.
+- `README.md`: este documento.
 
 ---
 
 ## Requisitos
 
-- **Python 3.10+** (recomendado: **Python 3.12**)
-- Paquetes:
+- **Python 3.10 o superior** (recomendado: **3.12**)
+- Librerías:
   - `numpy`
   - `pandas`
   - `matplotlib`
@@ -72,49 +74,50 @@ Ejemplo típico (puede variar según tus commits):
 
 ---
 
-## Instalación (recomendada con entorno virtual)
+## Instalación rápida
 
-### Windows (PowerShell)
+### En Linux/macOS
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+pip install numpy pandas matplotlib PyQt5
+```
+
+### En Windows (PowerShell)
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install numpy pandas matplotlib PyQt5
+```
 
-python3.12 -m venv .venv
-source .venv/bin/activate
-python -m pip install --upgrade pip
-pip install numpy pandas matplotlib PyQt5
+---
 
-Ejecución de la aplicación (GUI)
+## Uso de la aplicación
 
-La GUI requiere entorno con pantalla (Windows / Linux con escritorio / macOS).
-
+```bash
 python XCurveFitLab.py
-Flujo en la interfaz:
+```
 
-Cargar CSV.
+Flujo recomendado dentro de la interfaz:
 
-Elegir columna para X y para Y.
+1. Cargar archivo CSV.
+2. Elegir columna para X e Y.
+3. Graficar puntos para validar datos.
+4. Seleccionar modelo y configurar parámetros del algoritmo genético.
+5. Iniciar el ajuste y observar la convergencia.
 
-Graficar puntos (validación visual).
+---
 
-Seleccionar modelo y configurar el GA.
+## Benchmark por consola
 
-Ejecutar y observar MSE por generaciones + curva ajustada.
+Si quieres ejecutar pruebas sin GUI:
 
+```bash
+python3.12 benchmark_modelos_en_la_literatura.py.py
+```
 
-
-Benchmarks (modo consola / sin GUI)
-
-Este repositorio incluye un script CLI para comparar ajustes y generar gráficas de salida, ideal para ejecución en entornos sin interfaz.
-
-Ejemplo (dataset propio)
-python3.12 benchmark_classic_fits_full.py \
-  --csv data.csv \
-  --x var5 --y var6 \
-  --model exponencial \
-  --seed 123 --restarts 40 \
-  --out res_var5_var6_exp.csv \
-  --plot --plot_file fig_var5_var6_exp.png
+También puedes adaptar ese script para tus propios datasets y comparar modelos con distintos parámetros.
